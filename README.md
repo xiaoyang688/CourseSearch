@@ -9,4 +9,5 @@
 > mvn install
 ## 5.运行项目
 > java -jar demo-0.0.1-SNAPSHOT.jar
-
+## 6.浏览器输入
+> http://localhost:9090/search?question=这里填搜索问题
