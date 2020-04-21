@@ -8,6 +8,8 @@ public interface AnswerService {
      * @param text
      * @return
      */
-    String getAnswerBy150s(String text);
+    String getAnswerByWeb(String text);
+
+    String getAnswerByToken(String text);
 
 }

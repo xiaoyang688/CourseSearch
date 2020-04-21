@@ -2,6 +2,7 @@ package com.xiaoyang.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.gargoylesoftware.htmlunit.ScriptResult;
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.xiaoyang.service.AnswerService;
 import com.xiaoyang.utils.UserAgentUtils;
@@ -21,25 +22,50 @@ public class AnswerServiceImpl implements AnswerService {
     @Autowired
     private HtmlPage htmlPage;
 
-    private final String URL_150S = "https://150s.cn/topic/getSubject";
+    @Autowired
+    private WebClient webClient;
 
+    private final String URL_150S = "https://150s.cn/topic/getSubject";
     private final String KEY = "39383033327777772e313530732e636e";
+    private final String TOKEN = "4DECD2823D6884FEAFD5CFCCA72BFDEE";
 
     @Override
-    public String getAnswerBy150s(String text) {
+    public String getAnswerByWeb(String text) {
         String url = URL_150S;
-        String cookie = get150sCookie();
-        return getResult(url, text, cookie);
+        return getResultByWeb(url, text);
+    }
+
+    @Override
+    public String getAnswerByToken(String text) {
+        String url = URL_150S;
+        return getResultByToken(url, text, TOKEN);
     }
 
     /**
-     * 获取秘钥
+     * 通过本地获取secret
+     *
+     * @return
+     */
+    public String getSecretByStatic(String text) {
+        try {
+            webClient.getPage("http://localhost:9090/jm.js");
+            String js = "CryptoJS.AES.encrypt('" + text + "' ,CryptoJS.enc.Hex.parse('" + KEY + "')).ciphertext.toString()";
+            ScriptResult scriptResult = htmlPage.executeJavaScript(js);
+            return (String) scriptResult.getJavaScriptResult();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    /**
+     * 通过官网获取秘钥
      *
      * @param text
      * @return
      */
-    public String getSecret(String text) {
-        System.out.println(text);
+    public String getSecretByWeb(String text) {
         String js = "CryptoJS.AES.encrypt('" + text + "' ,CryptoJS.enc.Hex.parse('" + KEY + "')).ciphertext.toString()";
         ScriptResult result = htmlPage.executeJavaScript(js);
         return (String) result.getJavaScriptResult();
@@ -67,14 +93,46 @@ public class AnswerServiceImpl implements AnswerService {
         return cookie;
     }
 
-    private String getResult(String url, String text, String cookie) {
-        String result = "null";
+    private String getResultByToken(String url, String text, String token) {
+
+        if (URL_150S.equals(url)) {
+            FormBody formBody = new FormBody.Builder()
+                    .add("title", text)
+                    .add("secret", getSecretByStatic(text))
+                    .add("token", token)
+                    .build();
+            final Request postRequest = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+
+            try {
+                Response response = okHttpClient.newCall(postRequest).execute();
+                String res = response.body().string();
+                System.out.println(res);
+                Map resMap = JSON.parseObject(res, Map.class);
+                String title = (String) resMap.get("title");
+                if ("接口未授权".equals(title)) {
+                    return getResultByWeb(url, text);
+                }
+                String result = (String) resMap.get("answer");
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private String getResultByWeb(String url, String text) {
+
+        String cookie = get150sCookie();
 
         if (URL_150S.equals(url)) {
             //构造请求体
             FormBody formBody = new FormBody.Builder()
                     .add("title", text)
-                    .add("secret", getSecret(text))
+                    .add("secret", getSecretByStatic(text))
                     .build();
             final Request postRequest = new Request.Builder()
                     .url(url)//请求的url
@@ -91,13 +149,14 @@ public class AnswerServiceImpl implements AnswerService {
 
             try (Response response = okHttpClient.newCall(postRequest).execute()) {
                 String res = response.body().string();
+                System.out.println(res);
                 Map resMap = JSON.parseObject(res, Map.class);
-                result = (String) resMap.get("answer");
+                String result = (String) resMap.get("answer");
                 return result;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return result;
+        return null;
     }
 }

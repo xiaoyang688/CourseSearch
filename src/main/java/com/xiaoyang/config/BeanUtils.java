@@ -3,6 +3,8 @@ package com.xiaoyang.config;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +12,9 @@ import java.io.IOException;
 
 @Configuration
 public class BeanUtils {
+
+    @Autowired
+    private WebClient webClient;
 
     @Bean
     public OkHttpClient okHttpClient() {
@@ -26,6 +31,11 @@ public class BeanUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Bean
+    public WebClient webClient(){
+        return new WebClient();
     }
 
 }

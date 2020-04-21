@@ -12,7 +12,8 @@ public class AnswerController {
 
     @GetMapping("/search")
     public String getAnswerBy150s(String question) {
-        return answerService.getAnswerBy150s(question);
+        String answerByToken = answerService.getAnswerByToken(question);
+        return answerByToken;
     }
 
 }
