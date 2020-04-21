@@ -1,0 +1,7 @@
+server:
+  port: 9090
+
+API:
+  URL: "https://150s.cn/topic/getSubject"
+  KEY: "39383033327777772e313530732e636e"
+  TOKEN: "4DECD2823D6884FEAFD5CFCCA72BFDEE"

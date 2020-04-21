@@ -8,6 +8,7 @@ import com.xiaoyang.service.AnswerService;
 import com.xiaoyang.utils.UserAgentUtils;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,19 +26,22 @@ public class AnswerServiceImpl implements AnswerService {
     @Autowired
     private WebClient webClient;
 
-    private final String URL_150S = "https://150s.cn/topic/getSubject";
-    private final String KEY = "39383033327777772e313530732e636e";
-    private final String TOKEN = "";
+    @Value("${API.URL}")
+    private String URL;
+    @Value("${API.KEY}")
+    private String KEY;
+    @Value("${API.TOKEN}")
+    private String TOKEN;
 
     @Override
     public String getAnswerByWeb(String text) {
-        String url = URL_150S;
+        String url = URL;
         return getResultByWeb(url, text);
     }
 
     @Override
     public String getAnswerByToken(String text) {
-        String url = URL_150S;
+        String url = URL;
         return getResultByToken(url, text, TOKEN);
     }
 
@@ -48,9 +52,10 @@ public class AnswerServiceImpl implements AnswerService {
      */
     public String getSecretByStatic(String text) {
         try {
-            webClient.getPage("http://localhost:9090/jm.js");
+            webClient.getPage("http://localhost:9090/jm.html");
             String js = "CryptoJS.AES.encrypt('" + text + "' ,CryptoJS.enc.Hex.parse('" + KEY + "')).ciphertext.toString()";
             ScriptResult scriptResult = htmlPage.executeJavaScript(js);
+            System.out.println(scriptResult);
             return (String) scriptResult.getJavaScriptResult();
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,7 +100,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     private String getResultByToken(String url, String text, String token) {
 
-        if (URL_150S.equals(url)) {
+        if (URL.equals(url)) {
             FormBody formBody = new FormBody.Builder()
                     .add("title", text)
                     .add("secret", getSecretByStatic(text))
@@ -128,7 +133,7 @@ public class AnswerServiceImpl implements AnswerService {
 
         String cookie = get150sCookie();
 
-        if (URL_150S.equals(url)) {
+        if (URL.equals(url)) {
             //构造请求体
             FormBody formBody = new FormBody.Builder()
                     .add("title", text)
