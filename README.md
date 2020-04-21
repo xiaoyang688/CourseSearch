@@ -1,6 +1,6 @@
 # 使用步骤
 ## 1.克隆项目(建议选第一个)
-> https://gitee.com/xiaoyang6888/CourseSearch.git
+> https://gitee.com/xiaoyang6888/CourseSearch.git 或者
 > https://github.com/xiaoyang688/CourseSearch.git
 ## 2.解压项目
 > tar -zxvf xiaoyang6888-CourseSearch-master.zip
