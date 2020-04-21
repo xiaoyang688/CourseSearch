@@ -27,7 +27,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     private final String URL_150S = "https://150s.cn/topic/getSubject";
     private final String KEY = "39383033327777772e313530732e636e";
-    private final String TOKEN = "4DECD2823D6884FEAFD5CFCCA72BFDEE";
+    private final String TOKEN = "";
 
     @Override
     public String getAnswerByWeb(String text) {
