@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.gargoylesoftware.htmlunit.ScriptResult;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.xiaoyang.service.AnswerService;
+import com.xiaoyang.service.Answer150sService;
 import com.xiaoyang.utils.UserAgentUtils;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @Service
-public class AnswerServiceImpl implements AnswerService {
+public class Answer150sServiceImpl implements Answer150sService {
 
     @Autowired
     private OkHttpClient okHttpClient;

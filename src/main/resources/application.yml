@@ -5,3 +5,6 @@ API:
   URL: "https://150s.cn/topic/getSubject"
   KEY: "39383033327777772e313530732e636e"
   TOKEN: "4DECD2823D6884FEAFD5CFCCA72BFDEE"
+
+Search:
+  Type: "1"   # 1：学小易接口(默认接口)  2：150s官网接口  3：150s付费接口
